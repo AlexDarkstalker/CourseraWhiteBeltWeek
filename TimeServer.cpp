@@ -1,5 +1,6 @@
 #include <iostream>
 #include <exception>
+#include <system_error>
 #include <string>
 using namespace std;
 
@@ -9,6 +10,12 @@ string AskTimeServer() {
        * выброс исключения system_error
        * выброс другого исключения с сообщением.
     */
+    string result = "34";
+    if(result.empty())
+        throw system_error(EDOM, generic_category(), "System_error");
+    if(result.length() != 8)
+        throw length_error ("Wrong length!");
+    return result;
 }
 
 class TimeServer {
@@ -20,6 +27,15 @@ public:
             поля last_fetched_time
             * если AskTimeServer() бросила другое исключение, пробросьте его дальше.
         */
+        string result;
+        try {
+            result = AskTimeServer();
+            last_fetched_time = result;
+        }
+        catch (system_error& err) {
+            return last_fetched_time;
+        }
+        return last_fetched_time;
     }
 
 private:
